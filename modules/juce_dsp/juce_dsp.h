@@ -88,7 +88,8 @@
 
  // No SIMD Support
  #ifndef JUCE_USE_SIMD
-  #define JUCE_USE_SIMD 0
+  #define JUCE_SIMD_FALLBACK 1
+  #define JUCE_USE_SIMD 1
  #endif
 
 #endif
@@ -231,6 +232,10 @@ namespace juce
   #endif
  #elif JUCE_ARM
   #include "native/juce_neon_SIMDNativeOps.h"
+ #elif JUCE_SIMD_FALLBACK
+  #define SIMDE_ENABLE_NATIVE_ALIASES
+  #include <simde/x86/sse2.h>
+  #include "native/juce_sse_SIMDNativeOps.h"
  #else
   #error "SIMD register support not implemented for this platform"
  #endif
