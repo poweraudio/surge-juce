@@ -96,11 +96,20 @@
 
 #else
 
- // No SIMD Support
- #ifndef JUCE_USE_SIMD
-  #define JUCE_USE_SIMD 0
+ // No native SIMD support; use fallback implementation
+ #ifndef JUCE_USE_SIMD_FALLBACK
+  #define JUCE_USE_SIMD_FALLBACK 1
  #endif
 
+ #ifndef JUCE_USE_SIMD
+  #define JUCE_USE_SIMD JUCE_USE_SIMD_FALLBACK
+ #endif
+
+#endif
+
+// Ensure macro is defined
+#ifndef JUCE_USE_SIMD_FALLBACK
+ #define JUCE_USE_SIMD_FALLBACK 0
 #endif
 
 #ifndef JUCE_VECTOR_CALLTYPE
@@ -235,7 +244,9 @@ namespace util
  #include "native/juce_SIMDNativeOps_fallback.h"
 
  // include the correct native file for this build target CPU
- #if JUCE_INTEL
+ #if JUCE_USE_SIMD_FALLBACK
+  // will use fallback implementation in juce_fallback_SIMDNativeOps.h
+ #elif JUCE_INTEL
   #ifdef __AVX2__
    #include "native/juce_SIMDNativeOps_avx.h"
   #else
